@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Rental {
+  id          String   @id @default(cuid())
+  renterName  String
+  carModel    String?
+  startDate   DateTime
+  endDate     DateTime
+  amount      Float
+  status      String   @default("active") // active, archived
+  totalPaid   Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  tolls       Toll[]
+  tickets     Ticket[]
+}
+
+model Toll {
+  id              String   @id @default(cuid())
+  amount          Float
+  transactionDate DateTime
+  location        String
+  plate           String
+  laneTxnId       String?  // For deduping
+  status          String   @default("Unmatched") // Matched, Unmatched
+  
+  rentalId        String?
+  rental          Rental?  @relation(fields: [rentalId], references: [id], onDelete: SetNull)
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  amount      Float
+  date        DateTime
+  description String?
+  
+  rentalId    String
+  rental      Rental   @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+}
