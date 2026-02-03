@@ -51,49 +51,55 @@ export async function getRental(id) {
 }
 
 export async function addRental(rentalData) {
-    // Create initial rental object
-    // Check for retroactive toll matches
+    console.log("[addRental] START. Data:", JSON.stringify(rentalData, null, 2));
 
-    // 1. Create the rental
-    const newRental = await prisma.rental.create({
-        data: {
-            renterName: rentalData.renterName,
-            carModel: rentalData.carModel,
-            startDate: new Date(rentalData.startDate),
-            endDate: new Date(rentalData.endDate),
-            amount: Number(rentalData.amount),
-            status: 'active',
-            totalPaid: 0
-        }
-    });
-
-    // 2. Process Unmatched Tolls (Retroactive matching)
-    const unmatchedTolls = await prisma.toll.findMany({
-        where: { status: 'Unmatched' }
-    });
-
-    const start = new Date(rentalData.startDate);
-    const end = new Date(rentalData.endDate);
-
-    const tollsToLink = unmatchedTolls.filter(toll => {
-        const tollDate = new Date(toll.transactionDate);
-        return tollDate >= start && tollDate <= end;
-    });
-
-    if (tollsToLink.length > 0) {
-        await prisma.toll.updateMany({
-            where: {
-                id: { in: tollsToLink.map(t => t.id) }
-            },
+    try {
+        // 1. Create the rental
+        console.log("[addRental] Creating Prisma record...");
+        const newRental = await prisma.rental.create({
             data: {
-                status: 'Matched',
-                rentalId: newRental.id,
-                // Note: We don't update renterName on Toll because we rely on the relation
+                renterName: rentalData.renterName,
+                carModel: rentalData.carModel,
+                startDate: new Date(rentalData.startDate),
+                endDate: new Date(rentalData.endDate),
+                amount: Number(rentalData.amount),
+                status: 'active',
+                totalPaid: 0
             }
         });
-    }
+        console.log("[addRental] Created Rental ID:", newRental.id);
 
-    return getRental(newRental.id);
+        // 2. Process Unmatched Tolls (Retroactive matching)
+        const unmatchedTolls = await prisma.toll.findMany({
+            where: { status: 'Unmatched' }
+        });
+
+        const start = new Date(rentalData.startDate);
+        const end = new Date(rentalData.endDate);
+
+        const tollsToLink = unmatchedTolls.filter(toll => {
+            const tollDate = new Date(toll.transactionDate);
+            return tollDate >= start && tollDate <= end;
+        });
+
+        if (tollsToLink.length > 0) {
+            console.log(`[addRental] Linking ${tollsToLink.length} tolls...`);
+            await prisma.toll.updateMany({
+                where: {
+                    id: { in: tollsToLink.map(t => t.id) }
+                },
+                data: {
+                    status: 'Matched',
+                    rentalId: newRental.id,
+                }
+            });
+        }
+
+        return getRental(newRental.id);
+    } catch (error) {
+        console.error("[addRental] FATAL ERROR:", error);
+        throw error; // Re-throw to ensure UI knows it failed, but now we have logs
+    }
 }
 
 export async function updateRental(rentalId, updates) {
