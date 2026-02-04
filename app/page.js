@@ -4,6 +4,9 @@ import { TollUploader } from './components/features/TollUploader';
 import { getRentals } from './lib/actions';
 import { Card, CardHeader, CardTitle, CardContent } from './components/ui/Card';
 
+// FORCE DYNAMIC: Ensure this page never caches and always hits the DB
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const rentals = await getRentals();
 
