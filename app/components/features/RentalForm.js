@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 export function RentalForm() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null); // New error state
     const [formData, setFormData] = useState({
         renterName: '',
         carModel: '',
@@ -22,11 +23,14 @@ export function RentalForm() {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        setErrorMsg(null); // Clear error on edit
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setErrorMsg(null);
+
         try {
             // Combine date and time into ISO string
             const start = new Date(`${formData.startDate}T${formData.startTime}`);
@@ -45,9 +49,8 @@ export function RentalForm() {
             const result = await addRental(rentalData);
 
             if (result && result.error) {
-                alert(`Error saving rental: ${result.error}`);
-                console.error("Server reported error:", result.error);
-                return; // Stop here, don't clear form
+                setErrorMsg(result.error); // Show in UI
+                return;
             }
 
             setFormData({
@@ -62,7 +65,7 @@ export function RentalForm() {
             router.refresh();
         } catch (error) {
             console.error('Failed to add rental', error);
-            alert("Unexpected error: " + error.message);
+            setErrorMsg("Unexpected client error: " + error.message);
         } finally {
             setLoading(false);
         }
@@ -71,10 +74,20 @@ export function RentalForm() {
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
-                <CardTitle>Record New Rental</CardTitle>
+                <CardTitle className="flex justify-between items-center">
+                    <span>Record New Rental</span>
+                    <span className="text-xs text-yellow-500 font-mono bg-yellow-500/10 px-2 py-1 rounded">Debug Mode</span>
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-4">
+                    {/* Error Display */}
+                    {errorMsg && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm font-medium animate-pulse">
+                            ⚠️ {errorMsg}
+                        </div>
+                    )}
+
                     <div>
                         <label className="text-sm font-medium mb-1 block">Renter Name</label>
                         <Input
