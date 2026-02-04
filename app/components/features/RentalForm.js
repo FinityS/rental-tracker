@@ -42,7 +42,14 @@ export function RentalForm() {
                 totalTolls: 0
             };
 
-            await addRental(rentalData);
+            const result = await addRental(rentalData);
+
+            if (result && result.error) {
+                alert(`Error saving rental: ${result.error}`);
+                console.error("Server reported error:", result.error);
+                return; // Stop here, don't clear form
+            }
+
             setFormData({
                 renterName: '',
                 carModel: '',
@@ -55,6 +62,7 @@ export function RentalForm() {
             router.refresh();
         } catch (error) {
             console.error('Failed to add rental', error);
+            alert("Unexpected error: " + error.message);
         } finally {
             setLoading(false);
         }

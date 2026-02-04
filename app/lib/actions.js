@@ -98,7 +98,7 @@ export async function addRental(rentalData) {
         return getRental(newRental.id);
     } catch (error) {
         console.error("[addRental] FATAL ERROR:", error);
-        throw error; // Re-throw to ensure UI knows it failed, but now we have logs
+        return { error: error.message || "Unknown server error" };
     }
 }
 
