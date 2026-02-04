@@ -74,10 +74,7 @@ export function RentalForm() {
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                    <span>Record New Rental</span>
-                    <span className="text-xs text-yellow-500 font-mono bg-yellow-500/10 px-2 py-1 rounded">Debug Mode</span>
-                </CardTitle>
+                <CardTitle>Record New Rental</CardTitle>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4 flex flex-col gap-4">

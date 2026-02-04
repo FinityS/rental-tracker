@@ -42,7 +42,7 @@ export default async function Home() {
                   <p className="text-muted-foreground text-center py-8">No rentals recorded yet.</p>
                 ) : (
                   <div className="space-y-4">
-                    {rentals.slice().reverse().map((rental) => (
+                    {rentals.map((rental) => (
                       <div key={rental.id} className="flex justify-between items-center p-4 border rounded-lg hover:bg-accent/50 transition-colors">
                         <div>
                           <p className="font-medium">{rental.renterName}</p>
