@@ -2,6 +2,7 @@
 
 import prisma from './prisma';
 import path from 'path';
+import { revalidatePath } from 'next/cache';
 
 // --- Rentals ---
 
@@ -99,6 +100,8 @@ export async function addRental(rentalData) {
     } catch (error) {
         console.error("[addRental] FATAL ERROR:", error);
         return { error: error.message || "Unknown server error" };
+    } finally {
+        revalidatePath('/');
     }
 }
 
@@ -107,6 +110,7 @@ export async function updateRental(rentalId, updates) {
         where: { id: rentalId },
         data: updates
     });
+    revalidatePath('/');
     return getRental(rentalId);
 }
 
@@ -128,6 +132,7 @@ export async function deleteRental(rentalId) {
     await prisma.rental.delete({
         where: { id: rentalId }
     });
+    revalidatePath('/');
     return true;
 }
 
