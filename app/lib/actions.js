@@ -101,7 +101,7 @@ export async function addRental(rentalData) {
         console.error("[addRental] FATAL ERROR:", error);
         return { error: error.message || "Unknown server error" };
     } finally {
-        revalidatePath('/');
+        revalidatePath('/', 'layout');
     }
 }
 
@@ -110,7 +110,7 @@ export async function updateRental(rentalId, updates) {
         where: { id: rentalId },
         data: updates
     });
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
     return getRental(rentalId);
 }
 
@@ -132,7 +132,7 @@ export async function deleteRental(rentalId) {
     await prisma.rental.delete({
         where: { id: rentalId }
     });
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -149,7 +149,7 @@ export async function archiveRental(rentalId) {
             totalPaid: totalDebt
         }
     });
-
+    revalidatePath('/', 'layout');
     return getRental(rentalId);
 }
 
@@ -175,6 +175,7 @@ export async function archiveStatement(renterName) {
             }
         });
     }
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -209,6 +210,7 @@ export async function addToll(rentalId, tollData) {
             rentalId: rentalId
         }
     });
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -231,6 +233,7 @@ export async function deleteToll(tollId, rentalId) {
     if (toll) {
         await prisma.toll.delete({ where: { id: toll.id } });
     }
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -261,6 +264,7 @@ export async function addTollsToRentals(rentalUpdates) {
             }
         }
     }
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -283,6 +287,7 @@ export async function addUnmatchedTolls(tolls) {
             });
         }
     }
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -304,6 +309,7 @@ export async function getUnmatchedTolls() {
 
 export async function deleteAllTolls() {
     await prisma.toll.deleteMany({});
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -315,6 +321,7 @@ export async function clearRentalTolls(rentalId) {
             rentalId: null
         }
     });
+    revalidatePath('/', 'layout');
     return true;
 }
 
@@ -329,6 +336,7 @@ export async function addTicket(rentalId, ticket) {
             rentalId: rentalId
         }
     });
+    revalidatePath('/', 'layout');
     return getRental(rentalId);
 }
 
@@ -359,5 +367,6 @@ export async function deleteTicket(rentalId, ticketId) {
         }
     }
 
+    revalidatePath('/', 'layout');
     return getRental(rentalId);
 }

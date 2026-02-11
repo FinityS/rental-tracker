@@ -3,6 +3,8 @@ import { RentalList } from '../components/features/RentalList';
 import { Dashboard } from '../components/features/Dashboard';
 import { RentersList } from '../components/features/RentersList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function RentalsPage() {
     const rentals = await getRentals();
 

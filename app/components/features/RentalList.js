@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../ui/Card';
 import { Input } from '../ui/Input';
 import { deleteRental, updateRental } from '../../lib/actions';
@@ -19,6 +19,11 @@ export function RentalList({ initialRentals, showArchived = false }) {
     const [expandedId, setExpandedId] = useState(null);
     const [addingTicketId, setAddingTicketId] = useState(null);
     const router = useRouter();
+
+    // Sync state with props when server validation occurs
+    useEffect(() => {
+        setRentals(initialRentals);
+    }, [initialRentals]);
 
     const handleArchive = async (id) => {
         if (confirm('Mark this rental as fully paid and archive it?')) {

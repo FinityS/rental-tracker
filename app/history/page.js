@@ -1,6 +1,8 @@
 import { getRentals } from '../lib/actions';
 import { RentalList } from '../components/features/RentalList';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HistoryPage() {
     const rentals = await getRentals();
 
