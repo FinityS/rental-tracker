@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import Link from 'next/link';
 import { Download, ArrowLeft } from 'lucide-react';
 import { PrintButton } from '../../components/ui/PrintButton';
+import { LocalTime } from '../../components/ui/LocalTime';
 
 // Force dynamic behavior for this page
 export const dynamic = 'force-dynamic';
@@ -40,7 +41,7 @@ export default async function RenterStatementPage(props) {
             <header className="border-b-2 border-gray-800 pb-8 mb-8 flex justify-between items-start">
                 <div>
                     <h1 className="text-4xl font-bold uppercase tracking-tight mb-2">Statement</h1>
-                    <p className="text-gray-500 text-sm">Generated on {new Date().toLocaleDateString()}</p>
+                    <p className="text-gray-500 text-sm">Generated on <LocalTime date={new Date().toISOString()} format="toLocaleDateString" /></p>
                 </div>
                 <div className="text-right">
                     <h2 className="text-xl font-bold">{decodedName}</h2>
@@ -59,7 +60,7 @@ export default async function RenterStatementPage(props) {
                                 <div>
                                     <h3 className="font-bold text-lg">Rental Period #{idx + 1}</h3>
                                     <p className="text-sm text-gray-600">
-                                        {new Date(rental.startDate).toLocaleString()} — {new Date(rental.endDate).toLocaleString()}
+                                        <LocalTime date={rental.startDate} /> — <LocalTime date={rental.endDate} />
                                     </p>
                                     <p className="text-sm font-medium mt-1">{rental.carModel}</p>
                                 </div>
@@ -94,8 +95,8 @@ export default async function RenterStatementPage(props) {
                                     {rental.tolls && rental.tolls.map((toll, tIdx) => (
                                         <tr key={`toll-${tIdx}`}>
                                             <td className="py-2 text-gray-600 pl-4">Toll: {toll.Location}</td>
-                                            <td className="py-2 text-gray-500">{new Date(toll['Transaction Date']).toLocaleString()}</td>
-                                            <td className="py-2 text-right text-gray-600">${toll.Amount.toFixed(2)}</td>
+                                            <td className="py-2 text-gray-500"><LocalTime date={toll['Transaction Date']} /></td>
+                                            <td className="py-2 text-right text-gray-600">${Number(toll.Amount).toFixed(2)}</td>
                                         </tr>
                                     ))}
 
@@ -103,7 +104,7 @@ export default async function RenterStatementPage(props) {
                                     {rental.tickets && rental.tickets.map((ticket, kIdx) => (
                                         <tr key={`ticket-${kIdx}`}>
                                             <td className="py-2 text-red-600 pl-4">Ticket: {ticket.type}</td>
-                                            <td className="py-2 text-gray-500">{ticket.date} @ {ticket.location}</td>
+                                            <td className="py-2 text-gray-500"><LocalTime date={ticket.timestamp} format="toLocaleDateString" /> @ {ticket.location}</td>
                                             <td className="py-2 text-right text-red-600">${Number(ticket.amount).toFixed(2)}</td>
                                         </tr>
                                     ))}

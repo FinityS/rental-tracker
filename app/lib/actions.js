@@ -25,7 +25,21 @@ export async function getRentals() {
             totalTickets: r.tickets.reduce((sum, t) => sum + t.amount, 0),
             startDate: r.startDate.toISOString(),
             endDate: r.endDate.toISOString(),
-            createdAt: r.createdAt.toISOString()
+            createdAt: r.createdAt.toISOString(),
+            tickets: r.tickets.map(t => ({
+                ...t,
+                timestamp: t.date.toISOString(),
+                type: t.description ? (t.description.split(' @ ')[0] || 'Ticket') : 'Ticket',
+                location: t.description ? (t.description.split(' @ ')[1] || 'Unknown') : 'Unknown'
+            })),
+            tolls: r.tolls.map(t => ({
+                ...t,
+                Amount: t.amount,
+                'Transaction Date': t.transactionDate.toISOString(),
+                'Location': t.location,
+                'Plate': t.plate,
+                'Lane Txn ID': t.laneTxnId
+            }))
         }));
     } catch (error) {
         console.error("Failed to get rentals:", error);
@@ -47,7 +61,21 @@ export async function getRental(id) {
         totalTickets: rental.tickets.reduce((sum, t) => sum + t.amount, 0),
         startDate: rental.startDate.toISOString(),
         endDate: rental.endDate.toISOString(),
-        createdAt: rental.createdAt.toISOString()
+        createdAt: rental.createdAt.toISOString(),
+        tickets: rental.tickets.map(t => ({
+            ...t,
+            timestamp: t.date.toISOString(),
+            type: t.description ? (t.description.split(' @ ')[0] || 'Ticket') : 'Ticket',
+            location: t.description ? (t.description.split(' @ ')[1] || 'Unknown') : 'Unknown'
+        })),
+        tolls: rental.tolls.map(t => ({
+            ...t,
+            Amount: t.amount,
+            'Transaction Date': t.transactionDate.toISOString(),
+            'Location': t.location,
+            'Plate': t.plate,
+            'Lane Txn ID': t.laneTxnId
+        }))
     };
 }
 
